@@ -35,7 +35,7 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.Header.Set("Authorization", fmt.Printf("%s OAUTH-TOKEN", os.Getenv("AUTH_TOKEN")))
+	r.Header.Set("Authorization", fmt.Sprintf("%s OAUTH-TOKEN", os.Getenv("AUTH_TOKEN")))
 
 	proxy := httputil.NewSingleHostReverseProxy(u)
 	proxy.ServeHTTP(w, r)
