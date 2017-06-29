@@ -7,6 +7,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -21,6 +22,24 @@ func main() {
 }
 
 func ProxyFunc(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, "Only GET requests are supported", http.StatusForbidden)
+		return
+	}
+	
+	if repos, exists := os.LookupEnv("REPO_WHITELIST"); exists {
+		found := false
+		for _, repo := repos {
+			found = found || strings.HasPrefix(r.URL.Path, fmt.Sprintf("/repos/%s", repo))
+		}
+		if !found {
+			w.WriteHeader(http.StatusNotFound)
+			http.Error(w, fmt.Sprintf("Operation not in whitelist: %s", r.URL.Path), http.StatusForbidden)
+			return
+		}
+	}
+	
 	if token, exists := os.LookupEnv("AUTH_TOKEN"); exists {
 		r.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 	}
