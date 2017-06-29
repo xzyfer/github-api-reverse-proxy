@@ -24,6 +24,12 @@ func main() {
 		log.Fatal("$AUTH_TOKEN must be set")
 	}
 	
+	ua := os.Getenv("USER_AGENT")
+
+	if ua == "" {
+		log.Fatal("$USER_AGENT must be set")
+	}
+	
 	http.HandleFunc("/", ProxyFunc)
 	http.ListenAndServe(":" + port, nil)
 }
@@ -36,6 +42,7 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.Header.Set("Authorization", fmt.Sprintf("%s OAUTH-TOKEN", os.Getenv("AUTH_TOKEN")))
+	r.Header.Set("User-Agent", os.Getenv("USER_AGENT"))
 
 	proxy := httputil.NewSingleHostReverseProxy(u)
 	proxy.ServeHTTP(w, r)
