@@ -30,7 +30,7 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 	
 	if repos, exists := os.LookupEnv("REPO_WHITELIST"); exists {
 		found := false
-		for _, repo := repos {
+		for _, repo := range repos {
 			found = found || strings.HasPrefix(r.URL.Path, fmt.Sprintf("/repos/%s", repo))
 		}
 		if !found {
