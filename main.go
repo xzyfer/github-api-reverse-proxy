@@ -43,6 +43,8 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 
 	r.Header.Set("Authorization", fmt.Sprintf("%s OAUTH-TOKEN", os.Getenv("AUTH_TOKEN")))
 	r.Header.Set("User-Agent", os.Getenv("USER_AGENT"))
+	r.Header.Set("Host", "api.github.com")
+	r.Header.Set("Pragma", "no-cache")
 
 	proxy := httputil.NewSingleHostReverseProxy(u)
 	proxy.ServeHTTP(w, r)
