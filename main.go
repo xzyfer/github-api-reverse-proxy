@@ -9,8 +9,6 @@ import (
 	"os"
 )
 
-const proxyHost = "https://api.github.com/"
-
 func main() {
 	port := os.Getenv("PORT")
 
@@ -23,12 +21,6 @@ func main() {
 }
 
 func ProxyFunc(w http.ResponseWriter, r *http.Request) {
-	u, err := url.Parse(proxyHost)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
-
 	if token, exists := os.LookupEnv("AUTH_TOKEN"); exists {
 		r.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 		log.Println(fmt.Sprintf("Authorization: %s", fmt.Sprintf("token %s", token)))
@@ -45,6 +37,9 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("Pragma", "no-cache")
 	r.Header.Set("Host", "api.github.com")
 
-	proxy := httputil.NewSingleHostReverseProxy(u)
+	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
+		Scheme: "https",
+		Host: "api.github.com",
+	})
 	proxy.ServeHTTP(w, r)
 }
