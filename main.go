@@ -29,16 +29,15 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := os.Getenv("AUTH_TOKEN")
-	if token != "" {
-		r.Header.Set("Authorization", fmt.Sprintf("token %s", os.Getenv("AUTH_TOKEN")))
+	if token, exists := os.LookupEnv("AUTH_TOKEN"); exists {
+		r.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 	}
 	
-	ua := os.Getenv("USER_AGENT")
-	if ua == "" {
-		ua = "github-api-reverse-proxy"
+	if ua, exists := os.LookupEnv("USER_AGENT"); exists {
+		r.Header.Set("User-Agent", ua)
+	} else {
+		r.Header.Set("User-Agent", "github-api-reverse-proxy")
 	}
-	r.Header.Set("User-Agent", os.Getenv("USER_AGENT"))
 	
 	r.Header.Set("Pragma", "no-cache")
 
