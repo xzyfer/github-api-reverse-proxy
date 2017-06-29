@@ -18,18 +18,6 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 	
-	token := os.Getenv("AUTH_TOKEN")
-
-	if token == "" {
-		log.Fatal("$AUTH_TOKEN must be set")
-	}
-	
-	ua := os.Getenv("USER_AGENT")
-
-	if ua == "" {
-		log.Fatal("$USER_AGENT must be set")
-	}
-	
 	http.HandleFunc("/", ProxyFunc)
 	http.ListenAndServe(":" + port, nil)
 }
@@ -41,8 +29,17 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	r.Header.Set("Authorization", fmt.Sprintf("token %s", os.Getenv("AUTH_TOKEN")))
+	token := os.Getenv("AUTH_TOKEN")
+	if token != "" {
+		r.Header.Set("Authorization", fmt.Sprintf("token %s", os.Getenv("AUTH_TOKEN")))
+	}
+	
+	ua := os.Getenv("USER_AGENT")
+	if ua == "" {
+		ua = "github-api-reverse-proxy"
+	}
 	r.Header.Set("User-Agent", os.Getenv("USER_AGENT"))
+	
 	r.Header.Set("Pragma", "no-cache")
 
 	proxy := httputil.NewSingleHostReverseProxy(u)
