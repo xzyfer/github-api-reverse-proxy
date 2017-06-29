@@ -25,14 +25,14 @@ func ProxyFunc(w http.ResponseWriter, r *http.Request) {
 // 		r.Header.Set("Authorization", fmt.Sprintf("token %s", token))
 // 	}
 	
-	if ua, exists := os.LookupEnv("USER_AGENT"); exists {
-		r.Header.Set("User-Agent", ua)
-	} else {
+// 	if ua, exists := os.LookupEnv("USER_AGENT"); exists {
+// 		r.Header.Set("User-Agent", ua)
+// 	} else {
 		r.Header.Set("User-Agent", "github-api-reverse-proxy")
-	}
+// 	}
 	
-	r.Header.Set("Pragma", "no-cache")
-	r.Header.Set("Host", "api.github.com")
+// 	r.Header.Set("Pragma", "no-cache")
+// 	r.Header.Set("Host", "api.github.com")
 
 	proxy := httputil.NewSingleHostReverseProxy(&url.URL{
 		Scheme: "https",
